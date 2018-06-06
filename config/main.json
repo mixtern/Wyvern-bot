@@ -1,0 +1,9 @@
+{
+    "alert_id": "Notification channel id",
+    "bot_id": "Bot id",
+    "general_id": "General channel id",
+    "root_id": "Owner id",
+    "sdisco_id": "Server id",
+    "staff_id": "Staff group id",
+    "welcome_id": "Rules channel id"
+}

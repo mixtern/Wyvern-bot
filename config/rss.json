@@ -1,0 +1,10 @@
+{
+    "delay": 60,
+    "feeds": [
+        {
+            "last": "full url of last page",
+            "message": "Meep, meep! (New update!)",
+            "url": "feed url"
+        }
+    ]
+}

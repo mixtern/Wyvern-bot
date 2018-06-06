@@ -1,0 +1,7 @@
+{
+    "announcement": "Meep, meep! (%s has started streaming!)",
+    "delay": 15,
+    "streamers": {
+        "Display name":"path name"
+    }
+}
