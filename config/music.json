@@ -1,5 +1,5 @@
 {
-    "channel": "",
+    "channel": "music text-channel id",
     "query": [],
-    "voice": ""
+    "voice": "voice channel"
 }
