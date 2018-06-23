@@ -1,5 +1,6 @@
 #pylint: disable=C0103, C0111, C0301, C0330, W0603
-import discord, config
+import discord
+from base import config
 
 client = {}
 async def init(client_bot):
@@ -7,7 +8,7 @@ async def init(client_bot):
     client = client_bot
 
 def is_root(member):
-    return member.id == config.main["root_id"]
+    return member.id == config.get("main.root_id")
 
 def is_operator(member):
     if member.server is None:

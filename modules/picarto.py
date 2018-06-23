@@ -1,5 +1,5 @@
-import asyncio, discord, aiohttp, json, config, util
-
+import asyncio, discord, aiohttp, json
+from base import config,util
 client = {}
 
 async def init(cli):
@@ -26,8 +26,8 @@ async def is_online(name):
 async def check():
     global client
     loop = client.loop
-    streamers = config.picarto["streamers"]
-    dl_channel = client.get_channel(config.main["alert_id"])
+    streamers = config.get("picarto.streamers")
+    dl_channel = client.get_channel(config.get("main.alert_id"))
     online = []
 
     while True:
@@ -37,13 +37,13 @@ async def check():
                     continue
                 else:
                     link = "http://picarto.tv/" + streamers[streamer]
-                    message = config.picarto["announcement"] % streamer \
+                    message = config.get("picarto.announcement") % streamer \
                         + '\n' + link
                     asyncio.ensure_future(client.send_message(dl_channel,
-                        message), loop)
+                        message), loop=loop)
                     #await client.send_message(chan, 
-                    #    config.picarto["announcement"] % streamer + '\n' + link)
+                    #    config.get("picarto.announcement") % streamer + '\n' + link)
                     online.append(streamer)
             elif streamer in online:
                 online.remove(streamer)
-        await asyncio.sleep(config.picarto["delay"], loop=loop)
+        await asyncio.sleep(config.get("picarto.delay"), loop=loop)

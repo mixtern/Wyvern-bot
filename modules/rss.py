@@ -1,15 +1,22 @@
-import asyncio, discord, feedparser, config, urllib.parse, util
+import asyncio, discord, feedparser, urllib.parse
+from base import config,util
+from base.commands import command
 # from concurrent.futures import ProcessPoolExecutor
 
 force = 0
 client = {}
-# counter = 0
+
+async def command_update(message, args):
+    global force
+    force = 1
+
+cmd_update = command('update',command_update,'',
+'Forcing page update test',check = lambda m: util.is_root(m.author))
+
 
 async def init(cli):
     global client
     client = cli
-    # executor = ProcessPoolExecutor(1)
-    # rss_do = asyncio.ensure_future(loop.run_in_executor(executor, loop.create_task(do())))
     asyncio.ensure_future(do(), loop=client.loop)
 
 async def do():
@@ -17,9 +24,9 @@ async def do():
     # global counter
     
     while True:
-        for y in range(len(config.rss["feeds"])):
+        for y in range(len(config.get("rss.feeds"))):
             # get current link
-            x = config.rss["feeds"][y]
+            x = config.get("rss.feeds")[y]
             #print(x)
             d = feedparser.parse(x["url"])
             try:
@@ -39,19 +46,15 @@ async def do():
             if (x["last"] != post) or force:
                 image = discord.Embed().set_image(url=image_link)
                 message = x['message'] + "\n" + post
-                dl_channel = client.get_channel(config.main["alert_id"])
+                dl_channel = client.get_channel(config.get("main.alert_id"))
                 await client.send_message(dl_channel, message, embed=image)
             # update config file
-            config.rss["feeds"][y]["last"] = post
+            config.set("rss.feeds.%s.last" % y, post)
             force = 0
-        await config.write('rss')
         # print("%d"%counter)
         # counter += 1
-        for _ in range(config.rss['delay']):
+        for _ in range(config.get("rss.delay")):
             await asyncio.sleep(1, loop=client.loop)
             if force:
                 break
     
-async def command_update(message, args):
-    global force
-    force = 1

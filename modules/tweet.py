@@ -8,10 +8,9 @@ import logging
 from datetime import datetime
 import discord
 from tweepy.streaming import StreamListener
-from tweepy import OAuthHandler
-from tweepy import Stream
+from tweepy import OAuthHandler, Stream
 from tweepy.utils import import_simplejson
-import config, util
+from base import config, util
 
 #Authored by Renduras using discord.py and tweepy.py for the Slightly
 #   Discordant group.
@@ -29,13 +28,13 @@ logging.basicConfig()
 #KEYS
 # Go to http://apps.twitter.com and create an app.
 # The consumer key and secret will be generated for you after.
-consumer_key = config.keys["twitter"]["consumer_key"]
-consumer_secret = config.keys["twitter"]["consumer_secret"]
+consumer_key = config.get("keys.twitter.consumer_key")
+consumer_secret = config.get("keys.twitter.consumer_secret")
 
 # After the step above, you will be redirected to your app's page.
 # Create an access token under the the "Your access token" section.
-access_token = config.keys["twitter"]["access_token"]
-access_token_secret = config.keys["twitter"]["access_token_secret"]
+access_token = config.get("keys.twitter.access_token")
+access_token_secret = config.get("keys.twitter.access_token_secret")
 
 #TWITTER HANDLES
 #Admins, mods, and my twitter handles.
@@ -47,7 +46,7 @@ access_token_secret = config.keys["twitter"]["access_token_secret"]
 #Production handles.
 # twitter_users = ['sdamned', 'KingSabear', 'Princessnapped', 'Renduras', 'teh_Foxx0rz', 'Wingu']
 twitter_feeds = ['22467625', '2861293083', '2783451368', '1352858526', '3835979975', '1663215870']
-twitter_users = config.tweet["twitter_feeds"]
+twitter_users = config.get("tweet.twitter_feeds")
 # twitter_feeds = tweepy.api.lookup_users(screen_names=twitter_feeds) # further plans
 
 #FILTER WORDS
@@ -55,13 +54,13 @@ twitter_users = config.tweet["twitter_feeds"]
 #Test filter.
 # filter_words = ['test']
 #Production filter.
-filter_words = config.tweet["filter_words"]
+filter_words = config.get("tweet.filter_words")
 
 #CHANNEL ID
 #format = [[server1, channel1], [server2, channel2], etc.] #further plans
 # channel_id = '316444984624676866' # test3255
 # channel_id = '321570208651280396' # sdisco community-updates channel id
-channel_id = config.main["alert_id"]
+channel_id = config.get("main.alert_id")
 
 client = {}
 async def init(client_bot):
@@ -239,7 +238,7 @@ class DiscordListener(StreamListener):
             if message:
                 print("Sending message.\n")
                 asyncio.ensure_future(client.send_message(dl_channel,
-                    message), client.loop)
+                    message), loop = client.loop)
             print("\n")
         #uncomment for testing
         #else:

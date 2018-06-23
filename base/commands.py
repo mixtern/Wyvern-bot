@@ -1,14 +1,42 @@
 #pylint: disable=C0103, C0111, C0301, C0330, W0603
-import util, discord, asyncio, rss, sys, random, config
+import discord, asyncio, sys, random
+from modules import found_modules
+from base import config, util
+import inspect
+
+command_list = {}
+external_handlers = []
+
+class command(dict):
+    def __init__(self, name, command, args, description, check = lambda m: True, is_private = False):
+        dict.__init__(self)
+        if not isinstance(name,str):
+            print("invalid name")
+            return
+        if not inspect.iscoroutinefunction(command):
+            print("invalid command")
+            return
+        if not (isinstance(args,str) or isinstance(description,str)):
+            print("invalid description")
+            return
+        if is_private:
+            private_commands.append(name)
+        self.update({name:(command,args,description,check)})
+        global command_list
+        command_list = {**command_list, **self}
+            
 
 async def init(client_bot):
     global client
     client = client_bot
-
     @client.event
     async def on_message(message):
         if message.author == client.user:
             return
+        for hnd in external_handlers:
+            if not inspect.iscoroutinefunction(hnd):
+                continue
+            await hnd(message)
         if '<@{}>'.format(client.user.id) in message.content:
             args = message.content[message.content.index(
                     '<@{}>'.format(client.user.id)) +
@@ -24,7 +52,7 @@ async def init(client_bot):
             random.choice([True, False])
             await util.send_message(message.channel, random.choice(meep_responses))
             return
-        elif len(args) > 0 and args[0].lower() not in commands and \
+        elif len(args) > 0 and args[0].lower() not in command_list and \
             (message.server is None or util.is_operator(message.author)):
             await util.send_message(message.channel, 
                 'Unrecognized command `{}`.'.format(args[0]))
@@ -33,7 +61,7 @@ async def init(client_bot):
             #print('{} #{} {}: {}'.format(message.server.name, 
             #message.channel.name, message.author.name, message.clean_content))
             await client.send_typing(message.channel)
-            await commands[args[0].lower()][0](message, args[1:])
+            await command_list[args[0].lower()][0](message, args[1:])
         except discord.Forbidden:
             await util.send_message(message.channel,
                     'Message failed. Forbidden access.')
@@ -58,15 +86,15 @@ async def command_help(message, args):
     if len(args) == 0:
         result = '```\nUsage: @{} <command>\n'.format(client.user.name) + \
         '\nAvailable commands:\n'
-        for k, v in commands.items():
+        for k, v in command_list.items():
             if k not in private_commands:
                 if v[3](message):
                     result += k + '\n'
         result += '```'
         #await util.send_message(message.channel, result[:-2])
         await util.send_message(message.channel, result)
-    elif args[0].lower() in commands:
-        result = '`{1} {0[1]}`\n\n{0[2]}'.format(commands[args[0].lower()], 
+    elif args[0].lower() in command_list:
+        result = '`{1} {0[1]}`\n\n{0[2]}'.format(command_list[args[0].lower()], 
             args[0])
         await util.send_message(message.channel, result)
     else:
@@ -92,12 +120,15 @@ async def command_logout(message, args):
     #    if client.voice_client_in(server) is not None:
     #        await client.voice_client_in(server).disconnect()
     await client.logout()
+    mods = [globals()[x] for x in found_modules]
     await client.close() #necessary?
-    await asyncio.sleep(60) #necessary?
+    await asyncio.sleep(5) #necessary?
+    for mod in mods:
+        mod.client.loop.stop()
+    client.loop.stop()
     sys.exit() #necessary?
-    #client.loop.stop()
 
-commands = {
+command_list = {
     'ping' : (command_test, '', 'Request diagnostic reply.', lambda m: True),
     'pong' : (command_test2, '', '1-dimensional my butt.', lambda m: True),
     'help' : (command_help, '[command]',
@@ -108,9 +139,6 @@ commands = {
                 'Remove recent bot-related chatter for this bot.',
                 lambda m: m.server is not None
                     and m.channel.permissions_for(m.server.me).manage_messages),
-    'update' : (rss.command_update, '',
-                 'Forcing page update test',
-                 lambda m: util.is_root(m.author)),
     'config' : (config.command_config, '[set/get/print/list]', 
         config.description,
                 lambda m: len([x for x in m.author.roles if x.id == "320705908311064586"])

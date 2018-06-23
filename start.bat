@@ -1,1 +1,1 @@
-python index.py
+python35 index.py

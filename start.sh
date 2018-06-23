@@ -1,1 +1,2 @@
-python3 index.py
+#/usr/bin/python3.5 index.py
+python index.py
