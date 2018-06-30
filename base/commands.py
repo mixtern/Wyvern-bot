@@ -8,20 +8,21 @@ command_list = {}
 external_handlers = []
 
 class command(dict):
-    def __init__(self, name, command, args, description, check = lambda m: True, is_private = False):
+    def __init__(self, name, command, args, description, 
+                    check = lambda m: True, is_private = False):
         dict.__init__(self)
-        if not isinstance(name,str):
-            print("invalid name")
+        if not isinstance(name, str):
+            print("Invalid name.")
             return
         if not inspect.iscoroutinefunction(command):
-            print("invalid command")
+            print("Invalid command.")
             return
         if not (isinstance(args,str) or isinstance(description,str)):
-            print("invalid description")
+            print("Invalid description.")
             return
         if is_private:
             private_commands.append(name)
-        self.update({name:(command,args,description,check)})
+        self.update({name:(command, args, description, check)})
         global command_list
         command_list = {**command_list, **self}
             
