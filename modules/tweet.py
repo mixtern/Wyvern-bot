@@ -152,6 +152,8 @@ class DiscordListener(StreamListener):
 
         for i in filter_words:
             if i in data['text']:
+                if data['user']['screen_name'] == 'WingnutXLV' and i == 'stream'
+                    return False
                 return True
 
         print("Probably not a stream tweet.")
@@ -218,7 +220,7 @@ class DiscordListener(StreamListener):
         #print("---------------------------------------")
 
         print("---------------------------------------")
-        print("Cleaning raw_data.")
+        # print("Cleaning raw_data.")
         data = json.loads(raw_data)
 
         #uncomment for testing
@@ -226,7 +228,7 @@ class DiscordListener(StreamListener):
             # print(data)
             # print("---------------------------------------")
 
-        print("Filtering data.")
+        # print("Filtering data.")
         if self.tweet_filter(data):
             print("Creating message.")
             message = self.create_message(data)
@@ -247,10 +249,8 @@ class DiscordListener(StreamListener):
 
     def on_error(self, status):
         print('-------------------------------------')
-        print('\n')
         print('Twitter error:')
         print(status)
-        print('\n')
         print('-------------------------------------')
 
         if status == 420:
