@@ -17,12 +17,13 @@ def is_number(s):
     except ValueError:
         return False
 
-config_list = {'rss': "config/rss.json",
-           'main': "config/main.json",
-           'tweet': "config/tweet.json",
-           'keys': "config/keys.json",
-           'picarto': 'config/picarto.json',
-           'music':'config/music.json'}
+config_list = { 'rss'       : "config/rss.json",
+                'main'      : "config/main.json",
+                'tweet'     : "config/tweet.json",
+                'keys'      : "config/keys.json",
+                'picarto'   : 'config/picarto.json',
+                'music'     : 'config/music.json'
+                }
 configs = {}
 for config in config_list:
     path = config_list[config]
@@ -83,7 +84,9 @@ async def command_config(message, args):
 
     async def conf_print(config):
         if config in config_list and config != 'keys':
-            await client.send_message(channel, config_list[config] + ':\n```'+json.dumps(configs[config], sort_keys="true", indent=4)+'```')
+            await client.send_message(channel, 
+                config_list[config] + ':\n```' + 
+                json.dumps(configs[config], sort_keys="true", indent=4) + '```')
 
     async def conf_list():
         await client.send_message(channel, ', '.join((x for x in config_list if x != 'keys')))
