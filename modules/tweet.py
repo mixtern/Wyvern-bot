@@ -152,7 +152,7 @@ class DiscordListener(StreamListener):
 
         for i in filter_words:
             if i in data['text']:
-                if data['user']['screen_name'] == 'WingnutXLV' and i == 'stream'
+                if data['user']['screen_name'] == 'WingnutXLV' and i == 'stream':
                     continue
                 return True
 
