@@ -153,7 +153,7 @@ class DiscordListener(StreamListener):
         for i in filter_words:
             if i in data['text']:
                 if data['user']['screen_name'] == 'WingnutXLV' and i == 'stream'
-                    return False
+                    continue
                 return True
 
         print("Probably not a stream tweet.")
